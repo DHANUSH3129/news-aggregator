@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fact-Checker - NewsBreaker</title>
+    <style>
+        /* Using the same professional design from your project */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --background-color: #f4f7f6;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --subtle-text-color: #6c757d;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .checker-container {
+            background-color: var(--card-background);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .checker-container h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .checker-container p {
+            color: var(--subtle-text-color);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        .search-box button {
+            padding: 12px 20px;
+            border: none;
+            background: var(--primary-color);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #3a536b;
+        }
+
+        .result-container {
+            text-align: left;
+            margin-top: 2rem;
+        }
+
+        .loader {
+            text-align: center;
+            font-weight: 500;
+            color: var(--subtle-text-color);
+        }
+
+        .verdict {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+        }
+
+        .verdict.reliable { color: var(--success-color); }
+        .verdict.questionable { color: var(--warning-color); }
+        .verdict.unreliable { color: var(--danger-color); }
+
+        .explanation {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .source-article {
+            margin-top: 1rem;
+        }
+        
+        .source-article h4 {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+        }
+
+        .source-article a {
+            text-decoration: none;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        .source-article a:hover {
+            text-decoration: underline;
+        }
+        .source-article span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--subtle-text-color);
+            margin-top: 0.25rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="checker-container">
+        <h1>Real-Time Fact-Checker</h1>
+        <p>Enter a keyword, topic, or part of a headline. This tool will check GNews to see if the topic is being reported by major news outlets.</p>
+        
+        <div class="search-box">
+            <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., 'new moon landing')...">
+            <button id="checkButton">Check News</button>
+        </div>
+
+        <div id="resultContainer" class="result-container">
+            <!-- Results will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('checkButton').addEventListener('click', checkNews);
+
+        // Your GNews API Key
+        const apiKey = '9e4561c8a8827134590ceb0f4dc8b4da';
+
+        // A list of globally recognized, trusted news sources
+        // You can add more sources to this list
+        const trustedSources = [
+            'BBC News', 'Reuters', 'Associated Press', 'The New York Times', 'The Wall Street Journal',
+            'The Guardian', 'CNN', 'NPR', 'Times of India', 'The Hindu', 'Al Jazeera English',
+            'Bloomberg', 'Financial Times', 'USA Today', 'Hindustan Times'
+        ];
+
+        async function checkNews() {
+            const keyword = document.getElementById('keywordInput').value;
+            const resultContainer = document.getElementById('resultContainer');
+            
+            if (!keyword.trim()) {
+                resultContainer.innerHTML = `<h2 class="verdict unreliable">Error</h2><p class="explanation">Input cannot be empty. Please enter a keyword to check.</p>`;
+                return;
+            }
+
+            resultContainer.innerHTML = `<p class="loader">Fact-checking your keyword, please wait...</p>`;
+
+            // Construct the GNews search URL
+            const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(keyword)}&lang=en&apikey=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('API request failed. Check your API key or network.');
+                }
+                const data = await response.json();
+
+                if (data.totalArticles === 0) {
+                    // No results found
+                    resultContainer.innerHTML = `
+                        <h2 class="verdict unreliable">Unreliable</h2>
+                        <p class="explanation">No articles were found matching this keyword. This topic is not being reported by major news outlets and is likely a rumor or a hoax.</p>
+                    `;
+                    return;
+                }
+
+                // Check the top articles for a trusted source
+                let topTrustedArticle = null;
+                for (const article of data.articles) {
+                    if (trustedSources.includes(article.source.name)) {
+                        topTrustedArticle = article;
+                        break; // Stop as soon as we find one
+                    }
+                }
+
+                if (topTrustedArticle) {
+                    // Reliable article found
+                    resultContainer.innerHTML = `
+                        <h2 class="verdict reliable">Reliable</h2>
+                        <p class="explanation">This topic is being actively reported by major, trusted news sources.</p>
+                        <div class="source-article">
+                            <h4>Top Trusted Result:</h4>
+                            <a href="${topTrustedArticle.url}" target="_blank" rel="noopener noreferrer">${topTrustedArticle.title}</a>
+                            <span>Source: ${topTrustedArticle.source.name}</span>
+                        </div>
+                    `;
+                } else {
+                    // Articles found, but none from our trusted list
+                    resultContainer.innerHTML = `
+                        <h2 class="verdict questionable">Questionable</h2>
+                        <p class="explanation">News articles were found, but none from our pre-vetted, trusted sources. This topic may be a local story, a rumor, or from a less reliable source. Please verify the source yourself.</p>
+                        <div class="source-article">
+                            <h4>Example Result (Verify Source):</h4>
+                            <a href="${data.articles[0].url}" target="_blank" rel="noopener noreferrer">${data.articles[0].title}</a>
+                            <span>Source: ${data.articles[0].source.name}</span>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Fact-checking error:", error);
+                resultContainer.innerHTML = `
+                    <h2 class="verdict unreliable">Error</h2>
+                    <p class="explanation">An error occurred while checking the news. This could be due to a network issue or an API key limit. (Check console for details)</p>
+                `;
+            }
+        }
+    </script>
+
+</body>
+</html>

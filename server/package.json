@@ -1,0 +1,26 @@
+{
+  "name": "ai-fact-checker-backend",
+  "version": "1.0.0",
+  "description": "Backend server for AI fact-checking articles.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.6.8",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "node-fetch": "^3.3.2",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}

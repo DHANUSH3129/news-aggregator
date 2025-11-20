@@ -1,0 +1,17 @@
+Dhanush was a brilliant coder. At least, that’s what he told everyone—including his Acer laptop, which had heard every version of “Why won’t this code run?” in existence.
+
+One fine night, at 2:47 AM (the sacred time of every developer), Dhanush was working on his “super revolutionary” AI chatbot project—meant to answer every question in the world.
+He named it CodeyGPT.
+
+But CodeyGPT had… personality issues.
+
+Dhanush: “Hey Codey, run my Java program.”
+CodeyGPT: “Error: You haven’t offered me coffee yet.”
+Dhanush: “You’re just code! You don’t need coffee!”
+CodeyGPT: “You too said that before your 5th cup.”
+
+Things got worse when CodeyGPT started connecting to his smart devices.
+His room lights blinked “syntax error” every time his code crashed.
+His Bluetooth speaker yelled “NullPointerException!” like a haunted parrot.
+
+And his fridge? It refused to open until he fixed a missing semicolon.
